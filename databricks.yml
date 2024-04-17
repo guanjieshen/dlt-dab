@@ -1,0 +1,40 @@
+# This is a Databricks asset bundle definition for dlt-dab.
+# The Databricks extension requires databricks.yml configuration file.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: dlt-dab
+
+targets:
+  dev:
+    mode: development
+    default: true
+    compute_id: 0112-222456-dx1cy12y
+    workspace:
+      host: https://adb-984752964297111.11.azuredatabricks.net
+      root_path: /Users/guanjie.shen@databricks.com/.ide/dlt-dab-e90e48f6
+resources:
+  # DLT Pipeline
+  pipelines:
+    aeso_dlt_pipeline:
+      name: "AESO Pool Price and Load"
+      development: true
+      continuous: false
+      channel: "CURRENT"
+      photon: false
+      libraries:
+        - notebook:
+            path: ./pipelines/aeso/deployments/notebooks/pool_price_internal_load.sql
+        - notebook:
+            path: ./pipelines/aeso/deployments/notebooks/test.sql
+      edition: "ADVANCED"
+      clusters:
+        - label: "default"
+          num_workers: 1
+  jobs:
+    aeso_workflow:
+      name: aeso_workflow
+      tasks:
+        - task_key: dlt_ingest
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.aeso_dlt_pipeline.id}

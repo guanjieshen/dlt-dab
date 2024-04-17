@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=bundle_config_schema.json
+bundle:
+  name: transformation_framework_bundle
+
+include:
+  - bundle.environments.yml
+
+resources:
+  # DLT Pipeline
+  pipelines:
+    aeso_dlt_pipeline:
+      name: "[${bundle.environment}] AESO Pool Price and Load"
+      development: true
+      continuous: false
+      channel: "CURRENT"
+      photon: false
+      libraries:
+        - notebook:
+            path: ./notebooks/pool_price_internal_load.sql
+        - notebook:
+            path: ./notebooks/test.sql
+      edition: "ADVANCED"
+      clusters:
+        - label: "default"
+          num_workers: 1
+
+  jobs:
+    aeso_workflow:
+      name: aeso_workflow
+      tasks:
+        - task_key: dlt_ingest
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.aeso_dlt_pipeline.id}
+

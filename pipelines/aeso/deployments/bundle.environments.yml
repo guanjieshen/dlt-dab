@@ -1,0 +1,5 @@
+environments:
+  development:
+    workspace:
+      host: "https://adb-984752964297111.11.azuredatabricks.net/"
+    default: true
